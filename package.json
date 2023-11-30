@@ -1,6 +1,6 @@
 {
   "name": "maina-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "license": "ISC",
   "type": "module",
@@ -20,6 +20,7 @@
     "dist"
   ],
   "dependencies": {
+    "-": "^0.0.1",
     "commander": "^11.1.0",
     "figlet": "^1.7.0",
     "inquirer": "^9.2.12",

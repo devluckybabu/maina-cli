@@ -1,9 +1,19 @@
 #! /usr/bin/env node
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 import figlet from 'figlet';
 import { Command } from "commander";
 import { runCommand } from "./method/index.js";
 import inquirer from 'inquirer';
 import generateAction from './actions/generate-action.js';
+import generateClientAction from './actions/generate-client.js';
 //variables
 const program = new Command();
 //commands
@@ -24,5 +34,18 @@ program
     .option("-s, --schema <schema>", "Prisma Schema Model")
     .option("-o, --output [output]", "output path for generated file", "src/pages/api")
     .option("-m, --method <string>", "use comma separated, method for create api handler")
-    .action(generateAction);
+    .action(({ schema, output }) => __awaiter(void 0, void 0, void 0, function* () {
+    const options = yield prompt([{
+            name: 'type',
+            type: 'list',
+            message: "Select your code for: ",
+            choices: ["Client", "Server"]
+        }]);
+    if (options.type == "Client") {
+        // console.log("Hello I am client");
+        generateClientAction({ schema, output });
+    }
+    else
+        generateAction({ schema, output });
+}));
 program.parse(process.argv);
