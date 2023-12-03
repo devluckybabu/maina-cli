@@ -8,7 +8,7 @@ const handler = (req: ApiRequest, response: ApiResponse) => {
   return middleware(req, response, async (request: ApiRequest, res) => {
     try {
       const { query: { id } } = request;
-      const where = { id: String(id) }
+      const where = { id: Number(id) };
       const data = await prisma.${name}.delete({ where });
       return res.json({ code: 200, status: "success", data });
     } catch (error) {

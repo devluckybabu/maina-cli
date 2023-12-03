@@ -16,7 +16,8 @@ class BaseResources {
     try {
       const { baseUrl, version = "v1", path = "", customHeaders = {} } = this.config;
       const url = mergeRoute(baseUrl, path, route);
-      const params = { options, entity: route, role: '${role}', version };
+      const entity = route.split("?")[0];
+      const params = { options, entity, role: '${role}', version };
       const _headers = await getHeaders(params, this.config);
       const headers = Object.assign(_headers, customHeaders);
       //send request to server

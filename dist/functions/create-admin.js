@@ -5,9 +5,13 @@ const createAdmin = (projectDir, models) => {
     const classModels = models.map((model) => {
         let name = model.slice(1);
         name = model.charAt(0).toLowerCase() + name;
-        return `this.${name}= new ${model}Resources(config)`;
+        return `this.${name}= new ${model}Resources(config);`;
     });
-    const importModels = models.map((model) => `import ${model}Resources from './${model.toLowerCase()}';`);
+    const importModels = models.map((model) => {
+        let name = model.slice(1);
+        name = model.charAt(0).toLowerCase() + name;
+        return `import ${model}Resources from './${name}';`;
+    });
     //new models
     const new_models = models.map((model) => {
         let name = model.slice(1);
