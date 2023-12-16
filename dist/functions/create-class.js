@@ -25,8 +25,8 @@ interface ResultInfo<ItemT = any> {
 
 
 type ${model}Model = ${model};
-type Data = Prisma.${model}CreateInput;
 type Options = Prisma.${model}FindManyArgs;
+type DataInput = Prisma.${model}CreateInput;
 type CountOptions = Prisma.${model}CountArgs;
 type DefaultOptions = Prisma.${model}DefaultArgs;
 type GroupByOptions = Prisma.${model}GroupByArgs;
@@ -39,15 +39,25 @@ interface ListParams {
 
 
 class ${model}Resources extends BaseResources {
-  private route = "/${model.toLowerCase()}";
+  private route = "/${model.toLowerCase()}s";
 
-    /**
-   * @param data required from add new data
-   * @param options optional params for include details
-   * @returns object
-   */
-  create = async (data: Data, options?: DefaultOptions) => {
+  /**
+  * @param data required from add new data
+  * @param options optional params for include details
+  * @returns ${model}Model[]
+  */
+  createMany = async (data: DataInput[], options?: DefaultOptions) => {
     return await this.post(this.route, data, options);
+  } 
+
+  /**
+  * @param data required from add new data
+  * @param options optional params for include details
+  * @returns ${model}Model
+  */
+  create = async (data: DataInput, options?: DefaultOptions) => {
+    const route = this.route + '/add';
+    return await this.post(route, data, options);
   }
 
   /**

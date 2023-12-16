@@ -30,7 +30,7 @@ const generateClientAction = ({ schema }) => __awaiter(void 0, void 0, void 0, f
             }, {
                 name: 'output',
                 type: 'input',
-                default: "output",
+                default: "maina",
                 message: "Enter output directory: ",
             }]);
         const schema_path = path.join(currentDir, options === null || options === void 0 ? void 0 : options.schema);

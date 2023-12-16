@@ -6,7 +6,7 @@ const createIndex = (projectDir) => {
 import Client from './client';
 import Config from './interfaces/config';
 
-class Sirzon extends Client{
+class Maina extends Client{
   admin: Admin;
   constructor(config: Config){
     super(config);
@@ -14,6 +14,6 @@ class Sirzon extends Client{
   }
 }
 
-export default Sirzon;`);
+export default Maina;`);
 };
 export default createIndex;

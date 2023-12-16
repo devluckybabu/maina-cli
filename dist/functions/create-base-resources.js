@@ -15,7 +15,7 @@ class BaseResources {
   protected get = async (route: string, options?: any) => {
     try {
       const { baseUrl, version = "v1", path = "", customHeaders = {} } = this.config;
-      const url = mergeRoute(baseUrl, path, route);
+      const url = mergeRoute(baseUrl, path, version, route);
       const entity = route.split("?")[0];
       const params = { options, entity, role: '${role}', version };
       const _headers = await getHeaders(params, this.config);
@@ -34,14 +34,14 @@ class BaseResources {
   protected post = async (route: string, data: any, options?: any) => {
     try {
       const { baseUrl, version = "v1", path = "", customHeaders = {} } = this.config;
-      const url = mergeRoute(baseUrl, path, route);
+      const url = mergeRoute(baseUrl, path, version, route);
       const params = { options, version, entity: route, role: 'admin' };
       const _headers = await getHeaders(params, this.config);
       const headers = Object.assign(customHeaders, _headers);
       const response = await fetch(url, {
         headers,
         method: "POST",
-        body: JSON.stringify(data)
+        body: JSON.stringify({ data })
       });
       const result = await response.json();
       if (result?.status == "success") return result.data;
@@ -54,6 +54,5 @@ class BaseResources {
 
 
 export default BaseResources;`);
-    console.log("created base resources");
 };
 export default createBaseRescources;

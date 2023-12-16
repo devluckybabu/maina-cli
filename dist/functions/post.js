@@ -5,6 +5,5 @@ const createPostMethod = (outDir, model) => {
     const currentDir = createDir(dir);
     const file = `${currentDir}\\index.ts`;
     createFile(file, postQueries(model).join('\n'));
-    console.log("File created of " + file);
 };
 export default createPostMethod;

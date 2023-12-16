@@ -1,0 +1,317 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "./interfaces"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//models
+model Seller {
+  id           String      @id @default(cuid())
+  name         String      @db.VarChar(50)
+  image        String?     @db.VarChar(200)
+  email        String      @unique @db.VarChar(50)
+  mobile       String      @unique @db.VarChar(15)
+  access_token String?     @unique @db.VarChar(50)
+  device_token String?     @db.VarChar(500)
+  created_at   DateTime    @default(now())
+  role         SellerRole? @default(seller)
+  update_at    DateTime    @updatedAt
+
+  //relational models
+  carts          Cart[]
+  stores         Store[]
+  products       Product[]
+  categories     Category[]
+  sub_categories SubCategory[]
+  password       PasswordManager?
+  sessions       SellerSession[]
+
+  @@map("sellers")
+}
+
+//store model
+model Store {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(50)
+  logo       String?  @db.VarChar(200)
+  banner     String?  @db.VarChar(200)
+  sellerId   String   @db.VarChar(50)
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+
+  //relational models
+  seller Seller? @relation(fields: [sellerId], references: [id])
+
+  @@map("stores")
+}
+
+//category model
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique @db.VarChar(50)
+  description String   @db.VarChar(500)
+  image       String   @db.VarChar(200)
+  sellerId    String   @db.VarChar(50)
+  created_at  DateTime @default(now())
+  update_at   DateTime @updatedAt
+
+  //relational models
+  sub_categories SubCategory[]
+  seller         Seller?       @relation(fields: [sellerId], references: [id])
+
+  @@map("categories")
+}
+
+//sub category model
+model SubCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique @db.VarChar(50)
+  description String   @db.VarChar(500)
+  image       String   @db.VarChar(200)
+  cate_name   String   @db.VarChar(50)
+  sellerId    String   @db.VarChar(50)
+  created_at  DateTime @default(now())
+  update_at   DateTime @updatedAt
+
+  //relational models
+  seller   Seller?   @relation(fields: [sellerId], references: [id])
+  category Category? @relation(fields: [cate_name], references: [name])
+
+  @@map("sub_categories")
+}
+
+//brand model
+model Brand {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(50)
+  logo       String   @db.VarChar(200)
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+
+  @@map("brands")
+}
+
+model Variant {
+  id              Int        @id @default(autoincrement())
+  size            String?    @db.VarChar(50)
+  quantity        Int        @db.Int
+  productId       String     @db.VarChar(50)
+  main_price      Decimal    @db.Decimal(8, 2)
+  cost_price      Decimal    @db.Decimal(8, 2)
+  selling_price   Decimal    @db.Decimal(8, 2)
+  shipping_charge Decimal    @db.Decimal(8, 2)
+  dimensionId     Int?       @db.Int
+  //relational model
+  carts           Cart[]
+  product         Product?   @relation(fields: [productId], references: [id])
+  dimension       Dimension? @relation(fields: [dimensionId], references: [id])
+
+  @@map("variants")
+}
+
+//product model
+model Product {
+  id             String         @id @default(cuid())
+  title          String         @db.VarChar(50)
+  color          String?        @db.VarChar(50)
+  brand          String?        @db.VarChar(50)
+  caption        String?        @db.VarChar(20)
+  category       String         @db.VarChar(50)
+  sub_category   String         @db.VarChar(50)
+  image          String         @db.VarChar(200)
+  short_desc     String         @db.VarChar(200)
+  description    String?        @db.VarChar(5000)
+  sellerId       String         @db.VarChar(50)
+  images         Json           @default("[]") @db.Json
+  specification  Json?          @db.Json
+  payment_method PaymentMethods @default(cod)
+  created_at     DateTime       @default(now())
+  update_at      DateTime       @updatedAt
+  status         ProductStatus  @default(draft)
+
+  //relational model
+  carts     Cart[]
+  variants  Variant[]
+  favorites Favorite[]
+  seller    Seller?    @relation(fields: [sellerId], references: [id])
+
+  @@map("products")
+}
+
+//payment method
+model PaymentMethod {
+  id           Int            @id @default(autoincrement())
+  title        String         @db.VarChar(100)
+  isPublish    Boolean        @default(true)
+  merchant_id  String?        @db.VarChar(100)
+  merchant_key String?        @db.VarChar(100)
+  gateway      PaymentGateway @default(none)
+  method       PaymentMethods @default(cod)
+  description  String         @db.VarChar(500)
+  created_at   DateTime       @default(now())
+  update_at    DateTime       @updatedAt
+
+  @@map("payment_methods")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String   @db.VarChar(50)
+  image        String?  @db.VarChar(200)
+  email        String   @unique @db.VarChar(50)
+  mobile       String   @unique @db.VarChar(50)
+  device_token String?  @db.VarChar(500)
+  created_at   DateTime @default(now())
+  update_at    DateTime @updatedAt
+
+  //relational models
+  carts    Cart[]
+  password UserPassword?
+  sessions UserSession[]
+
+  @@map("users")
+}
+
+//cart model
+model Cart {
+  id         Int      @id @default(autoincrement())
+  productId  String   @db.VarChar(50)
+  userId     String   @db.VarChar(50)
+  sellerId   String   @db.VarChar(50)
+  quantity   Int      @default(1) @db.Int
+  variantId  Int      @db.Int
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+
+  //relational  model
+  user    User?    @relation(fields: [userId], references: [id])
+  seller  Seller?  @relation(fields: [sellerId], references: [id])
+  variant Variant? @relation(fields: [variantId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+  @@map("carts")
+}
+
+model Dimension {
+  id     Int     @id @default(autoincrement())
+  width  Decimal @db.Decimal(5, 2)
+  height Decimal @db.Decimal(5, 2)
+  weight Decimal @db.Decimal(5, 2)
+  breath Decimal @db.Decimal(5, 2)
+
+  //relational model
+  variants Variant[]
+
+  @@map("dimensions")
+}
+
+//favorite model
+model Favorite {
+  id         Int      @id @default(autoincrement())
+  userId     String   @db.VarChar(50)
+  productId  String   @db.VarChar(50)
+  created_at DateTime @default(now())
+  update_at  DateTime @updatedAt
+
+  //relational model
+  product Product? @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+  @@map("favorites")
+}
+
+//password manager
+model PasswordManager {
+  id          String   @unique @default(cuid())
+  hash        String   @db.VarChar(200)
+  created_at  DateTime @default(now())
+  update_date DateTime @updatedAt
+
+  //relational models
+  seller Seller? @relation(fields: [id], references: [id])
+
+  @@map("sellers_password")
+}
+
+//password manager
+model UserPassword {
+  id          String   @unique
+  hash        String   @db.VarChar(200)
+  created_at  DateTime @default(now())
+  update_date DateTime @updatedAt
+
+  //relational models
+  user User? @relation(fields: [id], references: [id])
+
+  @@map("users_password")
+}
+
+//session manager
+model SellerSession {
+  id           String      @id @default(uuid())
+  sellerId     String      @db.VarChar(50)
+  role         SessionRole @default(user)
+  metadata     Json?       @db.Json
+  login_via    String      @db.VarChar(30)
+  access_token String      @unique @db.VarChar(50)
+  created_at   DateTime    @default(now())
+  update_at    DateTime    @updatedAt
+
+  //relational models
+  seller Seller? @relation(fields: [sellerId], references: [id])
+
+  @@map("sellers_session")
+}
+
+//session manager
+model UserSession {
+  id           String      @id @default(uuid())
+  userId       String      @db.VarChar(50)
+  role         SessionRole @default(user)
+  metadata     Json?       @db.Json
+  login_via    String      @db.VarChar(30)
+  access_token String      @unique @db.VarChar(50)
+  created_at   DateTime    @default(now())
+  update_at    DateTime    @updatedAt
+
+  //relational models
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("users_session")
+}
+
+//enum values
+enum ProductStatus {
+  draft
+  privated
+  published
+}
+
+enum PaymentGateway {
+  none
+  paytm
+  stripe
+  razorpay
+  instamojo
+}
+
+enum PaymentMethods {
+  cod
+  prepaid
+}
+
+enum SellerRole {
+  admin
+  seller
+}
+
+enum SessionRole {
+  user
+  admin
+  seller
+}

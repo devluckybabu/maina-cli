@@ -32,7 +32,7 @@ program
     .command('generate')
     .description("generate nextjs API handler code")
     .option("-s, --schema <schema>", "Prisma Schema Model")
-    .option("-o, --output [output]", "output path for generated file", "src/pages/api")
+    .option("-o, --output [output]", "output path for generated file", "output")
     .option("-m, --method <string>", "use comma separated, method for create api handler")
     .action(({ schema, output }) => __awaiter(void 0, void 0, void 0, function* () {
     const options = yield prompt([{
@@ -48,4 +48,10 @@ program
     else
         generateAction({ schema, output });
 }));
+//develop command
+program.command('develop')
+    .description("Development of admin")
+    .action((args) => {
+    console.log("Develop: ", args);
+});
 program.parse(process.argv);

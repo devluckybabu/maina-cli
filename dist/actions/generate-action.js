@@ -8,43 +8,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import inquirer from "inquirer";
-import { createFileAction } from "../functions/actions.js";
+import { createExpressFileAction } from "./express-action.js";
 const prompt = inquirer.prompt;
 const methods = "GET,POST,DELETE,UPDATE";
 const generateAction = ({ schema, output }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        if (typeof schema == "string" && typeof output == "string") {
-            const options = yield prompt([{
-                    name: 'method',
-                    type: 'checkbox',
-                    choices: methods.split(','),
-                    message: "Select API Handler Mehod: "
-                }]);
-            yield createFileAction({ schema, output, method: options === null || options === void 0 ? void 0 : options.method });
-        }
-        else {
-            const options = yield prompt([{
-                    name: "schema",
-                    type: 'input',
-                    message: "Enter prisma schema location:",
-                    default: typeof schema == "string" ? schema : "prisma/schema.prisma",
-                }, {
-                    name: 'output',
-                    type: 'input',
-                    message: "Enter output directory:",
-                    default: typeof output == "string" ? output : "output",
-                }, {
-                    name: 'method',
-                    type: 'checkbox',
-                    choices: methods.split(','),
-                    message: "Select API Handler Mehod: "
-                }]);
-            yield createFileAction({
-                method: options === null || options === void 0 ? void 0 : options.method,
-                schema: options === null || options === void 0 ? void 0 : options.schema,
-                output: options === null || options === void 0 ? void 0 : options.output
-            });
-        }
+        const options = yield prompt([{
+                name: "schema",
+                type: 'input',
+                message: "Enter prisma schema location:",
+                default: typeof schema == "string" ? schema : "prisma/schema.prisma",
+            }, {
+                name: 'output',
+                type: 'input',
+                message: "Enter output directory:",
+                default: typeof output == "string" ? output : "output",
+            }]);
+        yield createExpressFileAction({
+            schema: options === null || options === void 0 ? void 0 : options.schema,
+            output: options === null || options === void 0 ? void 0 : options.output
+        });
     }
     catch (error) {
         console.log(error);
