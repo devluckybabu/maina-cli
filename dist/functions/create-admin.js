@@ -7,7 +7,7 @@ const createAdmin = (projectDir, models) => {
         let name = model.slice(1);
         name = model.charAt(0).toLowerCase() + name;
         name = pluralize(name);
-        return `this.${name}= new ${pluralize(model)}Resources(config);`;
+        return `this.${name}= new ${pluralize(model)}Resource(config);`;
     });
     const importModels = models.map((model) => {
         let name = model.slice(1);
