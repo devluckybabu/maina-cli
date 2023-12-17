@@ -7,7 +7,6 @@ const createConfig = (projectDir) => {
 export default interface Config {
   path?: string;
   baseUrl: string;
-  version?: string;
   secretKey: string;
   platform: Platform;
   maxRetries?: number;

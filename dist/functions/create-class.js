@@ -1,9 +1,11 @@
 import path from "path";
+import pluralize from 'pluralize-esm';
 import { createDir, createFile } from "../method/index.js";
 const createClass = (outDir, model, role) => {
     const currentDir = createDir(path.join(outDir, role));
     let name = model.slice(1);
     name = model.charAt(0).toLowerCase() + name;
+    name = pluralize(name);
     createFile(`${currentDir}\\${name}.ts`, `import BaseResources from "./base-resources";
 import { ${model}, Prisma } from "../interfaces";
 import { mergeRoute } from "../method";
@@ -38,8 +40,8 @@ interface ListParams {
 
 
 
-class ${model}Resources extends BaseResources {
-  private route = "/${model.toLowerCase()}s";
+class ${pluralize(model)}Resource extends BaseResources {
+  private route = "/${pluralize(model.toLowerCase())}";
 
   /**
   * @param data required from add new data
@@ -47,7 +49,7 @@ class ${model}Resources extends BaseResources {
   * @returns ${model}Model[]
   */
   createMany = async (data: DataInput[], options?: DefaultOptions) => {
-    return await this.post(this.route, data, options);
+    return await this.post(this.route, { data }, options);
   } 
 
   /**
@@ -56,7 +58,8 @@ class ${model}Resources extends BaseResources {
   * @returns ${model}Model
   */
   create = async (data: DataInput, options?: DefaultOptions) => {
-    const route = this.route + '/add';
+    const id = String(Date.now());
+    const route = this.route + '/' +id;
     return await this.post(route, data, options);
   }
 
@@ -67,6 +70,13 @@ class ${model}Resources extends BaseResources {
   list = async ({ limit = 50, page = 1, options = {} }: ListParams = DefaultParams) => {
     const route = this.route + '/list?limit=' + limit + '&page=' + page;
     const result = await this.get(route, options);
+    return result as ResultInfo<${model}Model>;
+  } 
+
+  //remove item
+  remove = async (id: string | string[], options: DefaultOptions) => {
+    const route = this.route;
+    const result = await this.delete(route, id, options);
     return result as ResultInfo<${model}Model>;
   }
 
@@ -108,6 +118,6 @@ class ${model}Resources extends BaseResources {
 }
 
 
-export default ${model}Resources;`);
+export default ${pluralize(model)}Resource;`);
 };
 export default createClass;

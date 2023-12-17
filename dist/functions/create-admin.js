@@ -1,3 +1,4 @@
+import pluralize from "pluralize-esm";
 import { createDir, createFile } from "../method/index.js";
 const createAdmin = (projectDir, models) => {
     const currentDir = createDir(projectDir + '\\admin');
@@ -5,18 +6,21 @@ const createAdmin = (projectDir, models) => {
     const classModels = models.map((model) => {
         let name = model.slice(1);
         name = model.charAt(0).toLowerCase() + name;
-        return `this.${name}= new ${model}Resources(config);`;
+        name = pluralize(name);
+        return `this.${name}= new ${pluralize(model)}Resources(config);`;
     });
     const importModels = models.map((model) => {
         let name = model.slice(1);
         name = model.charAt(0).toLowerCase() + name;
-        return `import ${model}Resources from './${name}';`;
+        name = pluralize(name);
+        return `import ${pluralize(model)}Resource from './${name}';`;
     });
     //new models
     const new_models = models.map((model) => {
         let name = model.slice(1);
         name = model.charAt(0).toLowerCase() + name;
-        return `${name}: ${model}Resources;`;
+        name = pluralize(name);
+        return `${name}: ${pluralize(model)}Resource;`;
     });
     //create index file
     createFile(file, `import BaseResources from './base-resources';

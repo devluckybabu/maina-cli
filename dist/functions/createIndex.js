@@ -3,10 +3,10 @@ const createIndex = (projectDir) => {
     const file = `${projectDir}\\index.ts`;
     //create index file
     createFile(file, `import Admin from './admin';
-import Client from './client';
+import Store from './store';
 import Config from './interfaces/config';
 
-class Maina extends Client{
+class Maina extends Store{
   admin: Admin;
   constructor(config: Config){
     super(config);

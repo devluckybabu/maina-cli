@@ -43,12 +43,12 @@ const generateClientAction = ({ schema }) => __awaiter(void 0, void 0, void 0, f
             createConfig(outDir);
             createClientMethod(outDir);
             createBaseRescources(outDir, 'admin');
-            createBaseRescources(outDir, 'client');
+            createBaseRescources(outDir, 'store');
             const models = Object.values(Prisma.ModelName);
             createAdmin(outDir, models);
             createCleint(outDir, models);
             for (let model of models) {
-                createClass(outDir, model, "client");
+                createClass(outDir, model, "store");
                 createClass(outDir, model, "admin");
             }
             createIndex(outDir);

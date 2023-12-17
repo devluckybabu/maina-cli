@@ -1,13 +1,15 @@
 import path from "path";
+import pluralize from "pluralize-esm";
 import { createDir, createFile } from "../method/index.js";
+//create index file
 export const createIndex = (outDir, model) => {
     let modelName = model.charAt(0).toLowerCase();
     modelName = modelName + model.slice(1);
-    const full_path = createDir(path.join(outDir, `${modelName}s`));
+    const full_path = createDir(path.join(outDir, pluralize(modelName)));
     const sIndex = `${full_path}\\[id].ts`;
     const indexFile = `${full_path}\\index.ts`;
-    createFile(indexFile, `import { getError, prisma } from "../../../api-handler";
-import { MainaRequest, MainaResponse } from "../../../api-handler";
+    createFile(indexFile, `import { getError, prisma } from "../../api-handler";
+import { MainaRequest, MainaResponse } from "../../api-handler";
 
 ///get data
 export const GET = async (request: MainaRequest, res: MainaResponse) => {
@@ -67,8 +69,8 @@ export const DEL = async (request: MainaRequest, res: MainaResponse) => {
   }
 }
 `);
-    createFile(sIndex, `import { getError, prisma } from "../../../api-handler";
-import { MainaRequest, MainaResponse } from "../../../api-handler";
+    createFile(sIndex, `import { getError, prisma } from "../../api-handler";
+import { MainaRequest, MainaResponse } from "../../api-handler";
 
 
 //fetch data
@@ -128,10 +130,10 @@ export const DEL = async (request: MainaRequest, res: MainaResponse) => {
 export const createList = (outDir, model) => {
     let modelName = model.charAt(0).toLowerCase();
     modelName = modelName + model.slice(1);
-    const full_path = createDir(path.join(outDir, `${modelName}s`));
+    const full_path = createDir(path.join(outDir, pluralize(modelName)));
     const file = `${full_path}\\list.ts`;
-    return createFile(file, `import { MainaRequest, MainaResponse } from "../../../api-handler";
-import { getError, paginateData, prisma } from "../../../api-handler";
+    return createFile(file, `import { MainaRequest, MainaResponse } from "../../api-handler";
+import { getError, paginateData, prisma } from "../../api-handler";
 
 export default async (request: MainaRequest, res: MainaResponse) => {
   try {
@@ -155,10 +157,10 @@ export default async (request: MainaRequest, res: MainaResponse) => {
 export const createCount = (outDir, model) => {
     let modelName = model.charAt(0).toLowerCase();
     modelName = modelName + model.slice(1);
-    const full_path = createDir(path.join(outDir, `${modelName}s`));
+    const full_path = createDir(path.join(outDir, pluralize(modelName)));
     const file = `${full_path}\\count.ts`;
-    createFile(file, `import { getError, prisma } from '../../../api-handler';
-import { MainaRequest, MainaResponse } from '../../../api-handler';
+    createFile(file, `import { getError, prisma } from '../../api-handler';
+import { MainaRequest, MainaResponse } from '../../api-handler';
 
 export default async (request: MainaRequest, res: MainaResponse) => {
   try {
@@ -175,10 +177,10 @@ export default async (request: MainaRequest, res: MainaResponse) => {
 export const createGroup = (outDir, model) => {
     let modelName = model.charAt(0).toLowerCase();
     modelName = modelName + model.slice(1);
-    const full_path = createDir(path.join(outDir, `${modelName}s`));
+    const full_path = createDir(path.join(outDir, pluralize(modelName)));
     const file = `${full_path}\\group.ts`;
-    createFile(file, `import { getError, prisma } from '../../../api-handler';
-import { MainaRequest, MainaResponse } from '../../../api-handler';
+    createFile(file, `import { getError, prisma } from '../../api-handler';
+import { MainaRequest, MainaResponse } from '../../api-handler';
 
 export default async (request: MainaRequest, res: MainaResponse) => {
   try {
