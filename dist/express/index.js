@@ -9,7 +9,7 @@ export const createIndex = (outDir, model) => {
     const sIndex = `${full_path}\\[id].ts`;
     const indexFile = `${full_path}\\index.ts`;
     createFile(indexFile, `import { getError, prisma } from "../../api-handler";
-import { MainaRequest, MainaResponse } from "../../api-handler";
+import { MainaRequest, MainaResponse, generateId } from "../../api-handler";
 
 ///get data
 export const GET = async (request: MainaRequest, res: MainaResponse) => {
@@ -28,7 +28,11 @@ export const GET = async (request: MainaRequest, res: MainaResponse) => {
 export const POST = async (request: MainaRequest, res: MainaResponse) => {
   try {
     const { options = {}, body: { data = [] } } = request;
-    const promises = data.map((item: any) => prisma.${modelName}.create({ data: item }));
+    const promises = data.map((item: any) =>{
+      const id = generateId('${modelName.slice(0, 3)}_', 30);
+      const _data = Object.assign(item,{ id });
+      return  prisma.${modelName}.create({ data: _data });
+    });
     const result = await prisma.$transaction(promises);
     return res.json({ status: 'success', data: result });
   } catch (error) {
@@ -70,7 +74,7 @@ export const DEL = async (request: MainaRequest, res: MainaResponse) => {
 }
 `);
     createFile(sIndex, `import { getError, prisma } from "../../api-handler";
-import { MainaRequest, MainaResponse } from "../../api-handler";
+import { MainaRequest, MainaResponse, generateId  } from "../../api-handler";
 
 
 //fetch data
@@ -90,8 +94,9 @@ export const GET = async (request: MainaRequest, res: MainaResponse) => {
 //add data
 export const POST = async (request: MainaRequest, res: MainaResponse) => {
   try {
-    const { options = {}, body, params: { id } } = request;
-    const _data = { ...body, id };
+    const { options = {}, body } = request;
+    const id = generateId('${modelName.slice(0, 3)}_', 30);
+    const _data = Object.assign(body,{ id });
     const result = await prisma.${modelName}.create({ data: _data });
     return res.json({ status: 'success', data: result });
   } catch (error) {
@@ -120,7 +125,7 @@ export const PATCH = async (request: MainaRequest, res: MainaResponse) => {
 export const DEL = async (request: MainaRequest, res: MainaResponse) => {
   try {
     const { options = {}, params: { id } } = request;
-    const result = prisma.${modelName}.delete({ where: { id } });
+    const result = await prisma.${modelName}.delete({ where: { id } });
     return res.json({ status: 'success', data: result });
   } catch (error) {
     const _error = getError(error);
