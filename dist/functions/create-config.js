@@ -2,9 +2,9 @@ import path from "path";
 import { createDir, createFile } from "../method/index.js";
 const createConfig = (projectDir) => {
     const currentDir = createDir(path.join(projectDir, 'interfaces'));
-    createFile(`${currentDir}\\config.ts`, `export type Platform = "web" | "android" | 'ios' | 'windows' | 'macos';
+    createFile(`${currentDir}\\index.ts`, `export type Platform = "web" | "android" | 'ios' | 'windows' | 'macos';
 
-export default interface Config {
+export interface Config {
   path?: string;
   baseUrl: string;
   secretKey: string;

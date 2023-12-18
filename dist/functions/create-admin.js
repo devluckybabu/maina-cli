@@ -24,7 +24,7 @@ const createAdmin = (projectDir, models) => {
     });
     //create index file
     createFile(file, `import BaseResources from './base-resources';
-import Config from '../interfaces/config';
+import { Config } from '../interfaces';
 ${importModels.join('\n')}
 
 
