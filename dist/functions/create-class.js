@@ -28,10 +28,12 @@ interface ResultInfo<ItemT = any> {
 
 type ${model}Model = ${model};
 type Options = Prisma.${model}FindManyArgs;
-type DataInput = Prisma.${model}CreateInput;
+type ${model}Input = Prisma.${model}CreateInput;
 type CountOptions = Prisma.${model}CountArgs;
 type DefaultOptions = Prisma.${model}DefaultArgs;
 type GroupByOptions = Prisma.${model}GroupByArgs;
+type ${model}UpdateInput = Prisma.${model}UncheckedCreateInput;
+
 interface ListParams {
   page: number;
   limit: number;
@@ -48,7 +50,7 @@ class ${pluralize(model)}Resource extends BaseResources {
   * @param options optional params for include details
   * @returns ${model}Model[]
   */
-  createMany = async (data: DataInput[], options?: DefaultOptions) => {
+  createMany = async (data: ${model}Input[], options?: DefaultOptions) => {
     return await this.post(this.route, { data }, options);
   } 
 
@@ -57,7 +59,7 @@ class ${pluralize(model)}Resource extends BaseResources {
   * @param options optional params for include details
   * @returns ${model}Model
   */
-  create = async (data: DataInput, options?: DefaultOptions) => {
+  create = async (data: ${model}Input, options?: DefaultOptions) => {
     const id = String(Date.now());
     const route = this.route + '/' +id;
     return await this.post(route, data, options);
@@ -115,6 +117,33 @@ class ${pluralize(model)}Resource extends BaseResources {
     const result = await this.get(this.route + '/group', options);
     return result;
   }
+
+  
+  /**
+   * @param id reguired for update specific item
+  * @param data required from update new data
+  * @param options optional params for include details
+*/
+  update = async (
+    id: string,
+    data:  ${model}UpdateInput,
+    options?: DefaultOptions
+  ) => {
+    const result = await this.patch(this.route, id, data, options);
+    return result as  ${model}Model;
+  };
+
+  /**
+  * @param data required from update new data
+  * @param options optional params for include details
+*/
+  updateMany = async (
+    data: ${model}UpdateInput[],
+    options?: DefaultOptions
+  ) => {
+    const result = await this.patchBatch(this.route, data, options);
+    return result as  ${model}Model;
+  };
 }
 
 

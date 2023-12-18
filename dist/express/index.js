@@ -92,7 +92,7 @@ export const POST = async (request: MainaRequest, res: MainaResponse) => {
   try {
     const { options = {}, body, params: { id } } = request;
     const _data = { ...body, id };
-    const result = prisma.${modelName}.create({ data: _data });
+    const result = await prisma.${modelName}.create({ data: _data });
     return res.json({ status: 'success', data: result });
   } catch (error) {
     const _error = getError(error);
@@ -105,8 +105,10 @@ export const POST = async (request: MainaRequest, res: MainaResponse) => {
 export const PATCH = async (request: MainaRequest, res: MainaResponse) => {
   try {
     const { options = {}, body, params: { id } } = request;
-    const where = { id };
-    const result = prisma.${modelName}.update({ data: body, where });
+    const result = await prisma.${modelName}.update({ 
+      data: body,
+       where: { id }
+    });
     return res.json({ status: 'success', data: result });
   } catch (error) {
     const _error = getError(error);

@@ -82,7 +82,51 @@ class BaseResources {
      throw error;
    }
  }
+
+  //update many method
+  protected patchBatch = async (route: string, data: any[], options?: any) => {
+    try {
+      const { baseUrl, customHeaders = {} } = this.config;
+      const url = mergeRoute(baseUrl, '${role}', route);
+      const params = { options, entity: route, role: '${role}' };
+      const _headers = await getHeaders(params, this.config);
+      const headers = Object.assign(customHeaders, _headers);
+      const response = await fetch(url, {
+        headers,
+        method: "PATCH",
+        body: JSON.stringify({ data })
+      });
+      const result = await response.json();
+      if (result?.status == "success") return result.data;
+      else throw result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //update many method
+  protected patch = async (route: string, id: string, data: any, options?: any) => {
+    try {
+      const { baseUrl, customHeaders = {} } = this.config;
+      const url = mergeRoute(baseUrl, '${role}', route, id);
+      const params = { options, entity: route, role: '${role}' };
+      const _headers = await getHeaders(params, this.config);
+      const headers = Object.assign(customHeaders, _headers);
+      const response = await fetch(url, {
+        headers,
+        method: "PATCH",
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (result?.status == "success") {
+        return result.data;
+      } else throw result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
+
 export default BaseResources;`);
 };
 export default createBaseRescources;
