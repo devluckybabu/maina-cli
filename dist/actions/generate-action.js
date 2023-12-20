@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import inquirer from "inquirer";
 import { createExpressFileAction } from "./express-action.js";
 const prompt = inquirer.prompt;
-const methods = "GET,POST,DELETE,UPDATE";
 const generateAction = ({ schema, output }) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const options = yield prompt([{

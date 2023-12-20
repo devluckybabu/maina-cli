@@ -11,6 +11,11 @@ export interface Config {
   platform: Platform;
   maxRetries?: number;
   customHeaders?: HeadersInit;
+}
+export interface ErrorInfo{
+  code: number;
+  status: string;
+  message: string;
 }`);
 };
 export default createConfig;

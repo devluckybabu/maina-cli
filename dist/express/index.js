@@ -29,7 +29,7 @@ export const POST = async (request: MainaRequest, res: MainaResponse) => {
   try {
     const { options = {}, body: { data = [] } } = request;
     const promises = data.map((item: any) =>{
-      const id = generateId('${modelName.slice(0, 3)}_', 30);
+      const id = generateId('${modelName.slice(0, 4)}_', 30);
       const _data = Object.assign(item,{ id });
       return  prisma.${modelName}.create({ data: _data });
     });
@@ -95,7 +95,7 @@ export const GET = async (request: MainaRequest, res: MainaResponse) => {
 export const POST = async (request: MainaRequest, res: MainaResponse) => {
   try {
     const { options = {}, body } = request;
-    const id = generateId('${modelName.slice(0, 3)}_', 30);
+    const id = generateId('${modelName.slice(0, 4)}_', 30);
     const _data = Object.assign(body,{ id });
     const result = await prisma.${modelName}.create({ data: _data });
     return res.json({ status: 'success', data: result });

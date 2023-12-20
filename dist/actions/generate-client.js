@@ -39,7 +39,7 @@ const generateClientAction = ({ schema }) => __awaiter(void 0, void 0, void 0, f
             const projectDir = schema_path.split('\\').slice(0, -2).join('\\');
             const { Prisma } = yield getPrismaClient(projectDir);
             const outDir = createDir(path.join(process.cwd(), options === null || options === void 0 ? void 0 : options.output));
-            cpSync(`${projectDir}\\node_modules\\.prisma\\client`, outDir + '\\interfaces\\models', { recursive: true });
+            cpSync(`${projectDir}\\node_modules\\.prisma\\client`, path.join(process.cwd(), 'prisma'), { recursive: true });
             createConfig(outDir);
             createClientMethod(outDir);
             createBaseRescources(outDir, 'admin');

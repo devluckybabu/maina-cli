@@ -4,7 +4,7 @@ const createIndex = (projectDir) => {
     //create index file
     createFile(file, `import Admin from './admin';
 import Store from './store';
-import { Config } from '../interfaces';
+import { Config } from './interfaces';
 
 class Maina extends Store{
   admin: Admin;

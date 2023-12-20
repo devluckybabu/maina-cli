@@ -8,8 +8,9 @@ const createClass = (outDir, model, role) => {
     name = pluralize(name);
     if (role === "admin") {
         createFile(`${currentDir}\\${name}.ts`, `import BaseResources from "./base-resources";
-import { ${model}, Prisma } from "../interfaces/models";
+import { ${model}, Prisma } from "../../prisma";
 import { mergeRoute } from "../method";
+import { ErrorInfo } from "../interfaces";
 
 const DefaultParams = {
   page: 1,
@@ -27,13 +28,13 @@ interface ResultInfo<ItemT = any> {
 }
 
 
-type ${model}Model = ${model};
-type Options = Prisma.${model}FindManyArgs;
-type CountOptions = Prisma.${model}CountArgs;
-type DefaultOptions = Prisma.${model}DefaultArgs;
-type GroupByOptions = Prisma.${model}GroupByArgs;
-type ${model}Input = Prisma.${model}UncheckedCreateInput;
-type ${model}UpdateInput = Prisma.${model}UncheckedUpdateInput;
+export type ${model}Model = ${model};
+export type Options = Prisma.${model}FindManyArgs;
+export type CountOptions = Prisma.${model}CountArgs;
+export type Options = Prisma.${model}DefaultArgs;
+export type GroupByOptions = Prisma.${model}GroupByArgs;
+export type ${model}Input = Prisma.${model}UncheckedCreateInput;
+export type ${model}UpdateInput = Prisma.${model}UncheckedUpdateInput;
 
 interface ListParams {
   page: number;
@@ -51,37 +52,65 @@ class ${pluralize(model)}Resource extends BaseResources {
   * @param options optional params for include details
   * @returns ${model}Model[]
   */
-  createMany = async (data: ${model}Input[], options?: DefaultOptions) => {
-    return await this.post(this.route, { data }, options);
-  } 
+  createMany = (data: ${model}Input[], options?: Options) => {
+    return new Promise<${model}Model[]>(async (resolve, reject) => {
+      try {
+        const result = await this.post(this.route, { data }, options);
+        return resolve(result);
+      } catch (error) {
+        error = error as ErrorInfo;
+        return reject(error)
+      }
+    })
+  }
 
   /**
   * @param data required from add new data
   * @param options optional params for include details
   * @returns ${model}Model
   */
-  create = async (data: ${model}Input, options?: DefaultOptions) => {
-    const id = String(Date.now());
-    const route = this.route + '/' +id;
-    return await this.post(route, data, options);
+  create = (data: ${model}Input, options?: Options) => {
+    return new Promise<${model}Model>(async (resolve, reject) => {
+      try {
+        const route = this.route + '/add';
+        const result = await this.post(route, data, options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
   }
 
   //remove item
-  remove = async (id: string | string[], options: DefaultOptions) => {
-    const route = this.route;
-    const result = await this.delete(route, id, options);
-    return result as ResultInfo<${model}Model>;
+  deleteItem = (id: string, options?: Options) => {
+    return new Promise<${model}Model>(async (resolve, reject) => {
+      try {
+        const route = this.route;
+        const result = await this.delete(route, id, options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
+  }
+
+  //remove items
+  deleteMany = (id: string[], options?: Options) => {
+    return new Promise<${model}Model[]>(async (resolve, reject) => {
+      try {
+        const route = this.route;
+        const result = await this.delete(route, id, options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
   }
   
-  /**
-   * @param id reguired for update specific item
-  * @param data required from update new data
-  * @param options optional params for include details
-*/
-  update = async (
+  updateItem = async (
     id: string,
     data:  ${model}UpdateInput,
-    options?: DefaultOptions
+    options?: Options
   ) => {
     const result = await this.patch(this.route, id, data, options);
     return result as  ${model}Model;
@@ -93,7 +122,7 @@ class ${pluralize(model)}Resource extends BaseResources {
 */
   updateMany = async (
     data: ${model}UpdateInput[],
-    options?: DefaultOptions
+    options?: Options
   ) => {
     const result = await this.patchBatch(this.route, data, options);
     return result as  ${model}Model[];
@@ -124,7 +153,7 @@ class ${pluralize(model)}Resource extends BaseResources {
    * @returns Null or Object
    */
 
-  getItem = async (id: string, options?: DefaultOptions) => {
+  getItem = async (id: string, options?: Options) => {
     const path = mergeRoute(this.route, id);
     const result = await this.get(path, options);
     return result as ${model}Model;
@@ -151,7 +180,7 @@ export default ${pluralize(model)}Resource;`);
     }
     else {
         createFile(`${currentDir}\\${name}.ts`, `import BaseResources from "./base-resources";
-import { ${model}, Prisma } from "../interfaces/models";
+import { ${model}, Prisma } from "../../prisma";
 import { mergeRoute } from "../method";
 
 const DefaultParams = {
@@ -170,13 +199,13 @@ interface ResultInfo<ItemT = any> {
 }
 
 
-type ${model}Model = ${model};
-type Options = Prisma.${model}FindManyArgs;
-type CountOptions = Prisma.${model}CountArgs;
-type DefaultOptions = Prisma.${model}DefaultArgs;
-type GroupByOptions = Prisma.${model}GroupByArgs;
-type ${model}Input = Prisma.${model}UncheckedCreateInput;
-type ${model}UpdateInput = Prisma.${model}UncheckedUpdateInput;
+export type ${model}Model = ${model};
+export type Options = Prisma.${model}FindManyArgs;
+export type CountOptions = Prisma.${model}CountArgs;
+export type Options = Prisma.${model}DefaultArgs;
+export type GroupByOptions = Prisma.${model}GroupByArgs;
+export type ${model}Input = Prisma.${model}UncheckedCreateInput;
+export type ${model}UpdateInput = Prisma.${model}UncheckedUpdateInput;
 
 interface ListParams {
   page: number;
@@ -214,7 +243,7 @@ class ${pluralize(model)}Resource extends BaseResources {
    * @returns Null or Object
    */
 
-  getItem = async (id: string, options?: DefaultOptions) => {
+  getItem = async (id: string, options?: Options) => {
     const path = mergeRoute(this.route, id);
     const result = await this.get(path, options);
     return result as ${model}Model;
