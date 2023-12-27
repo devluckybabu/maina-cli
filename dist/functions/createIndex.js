@@ -1,10 +1,11 @@
 import { createFile } from "../method/index.js";
 const createIndex = (projectDir) => {
-    const file = `${projectDir}\\index.ts`;
+    const file = `${projectDir}\\src\\index.ts`;
     //create index file
-    createFile(file, `import Admin from './admin';
+    createFile(file, `export * from './models';
+  import Admin from './admin';
 import Store from './store';
-import { Config } from './interfaces';
+import { Config } from './models';
 
 class Maina extends Store{
   admin: Admin;

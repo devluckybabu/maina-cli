@@ -1,8 +1,8 @@
 import { createDir, createFile } from "../method/index.js";
 const createClientMethod = (projectDir) => {
-    const dir = createDir(`${projectDir}\\method`);
+    const dir = createDir(`${projectDir}\\src\\method`);
     createFile(`${dir}\\index.ts`, `import JWT from "expo-jwt";
-import { Config } from "../interfaces";
+import { Config } from "../../models";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 const filterRoute = (route: string) => {
   if (route == "/") return "";

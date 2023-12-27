@@ -16,6 +16,15 @@ export interface ErrorInfo{
   code: number;
   status: string;
   message: string;
-}`);
+}
+
+
+
+export interface ListParams<Options = any> {
+  page?: number;
+  limit?: number;
+  options?: Options;
+}
+`);
 };
 export default createConfig;

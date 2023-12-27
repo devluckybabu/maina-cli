@@ -1,8 +1,8 @@
 import path from "path";
 import { createDir, createFile } from "../method/index.js";
 const createBaseRescources = (outDir, role = "client") => {
-    const currentDir = createDir(path.join(outDir, role));
-    createFile(`${currentDir}\\base-resources.ts`, `import { Config } from '../interfaces';
+    const currentDir = createDir(path.join(outDir, 'src', role));
+    createFile(`${currentDir}\\base-resources.ts`, `import { Config } from '../models';
 import { getHeaders, mergeRoute } from '../method';
 
 

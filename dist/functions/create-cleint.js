@@ -1,7 +1,7 @@
 import pluralize from "pluralize-esm";
 import { createDir, createFile } from "../method/index.js";
 const createCleint = (projectDir, models) => {
-    const currentDir = createDir(projectDir + '\\store');
+    const currentDir = createDir(projectDir + '\\src\\store');
     const file = `${currentDir}\\index.ts`;
     const classModels = models.map((model) => {
         let name = model.slice(1);
@@ -23,7 +23,7 @@ const createCleint = (projectDir, models) => {
     });
     //create index file
     createFile(file, `import BaseResources from './base-resources';
-import { Config } from '../interfaces';
+import { Config } from "../models";
 ${importModels.join('\n')}
 
 

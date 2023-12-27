@@ -2,15 +2,25 @@ import path from "path";
 import pluralize from 'pluralize-esm';
 import { createDir, createFile } from "../method/index.js";
 const createClass = (outDir, model, role) => {
-    const currentDir = createDir(path.join(outDir, role));
+    const currentDir = createDir(path.join(outDir, 'src', role));
     let name = model.slice(1);
     name = model.charAt(0).toLowerCase() + name;
     name = pluralize(name);
     if (role === "admin") {
         createFile(`${currentDir}\\${name}.ts`, `import BaseResources from "./base-resources";
-import { ${model}, Prisma } from "../../prisma";
 import { mergeRoute } from "../method";
-import { ErrorInfo } from "../interfaces";
+import {
+  ErrorInfo,
+  ListParams,
+  ResultInfo, 
+  ${model}Args,
+  ${model}Model,
+  ${model}Options, 
+  ${model}CreateInput,
+  ${model}UpdateInput,
+  ${model}CountOptions, 
+  ${model}GroupOptions, 
+} from "../models";
 
 const DefaultParams = {
   page: 1,
@@ -18,41 +28,12 @@ const DefaultParams = {
   options: {}
 };
 
-interface ResultInfo<ItemT = any> {
-  page: number;
-  count: number;
-  limit: number;
-  pages: number;
-  length: number;
-  data: ItemT[]
-}
-
-
-export type ${model}Model = ${model};
-export type Options = Prisma.${model}FindManyArgs;
-export type CountOptions = Prisma.${model}CountArgs;
-export type Options = Prisma.${model}DefaultArgs;
-export type GroupByOptions = Prisma.${model}GroupByArgs;
-export type ${model}Input = Prisma.${model}UncheckedCreateInput;
-export type ${model}UpdateInput = Prisma.${model}UncheckedUpdateInput;
-
-interface ListParams {
-  page: number;
-  limit: number;
-  options?: Options;
-}
-
-
 
 class ${pluralize(model)}Resource extends BaseResources {
   private route = "/${pluralize(model.toLowerCase())}";
 
-  /**
-  * @param data required from add new data
-  * @param options optional params for include details
-  * @returns ${model}Model[]
-  */
-  createMany = (data: ${model}Input[], options?: Options) => {
+  //create with batch
+  createMany = (data: ${model}CreateInput[], options?:  ${model}Options) => {
     return new Promise<${model}Model[]>(async (resolve, reject) => {
       try {
         const result = await this.post(this.route, { data }, options);
@@ -64,12 +45,8 @@ class ${pluralize(model)}Resource extends BaseResources {
     })
   }
 
-  /**
-  * @param data required from add new data
-  * @param options optional params for include details
-  * @returns ${model}Model
-  */
-  create = (data: ${model}Input, options?: Options) => {
+  //create single item
+  create = (data: ${model}CreateInput, options?:  ${model}Options) => {
     return new Promise<${model}Model>(async (resolve, reject) => {
       try {
         const route = this.route + '/add';
@@ -82,7 +59,7 @@ class ${pluralize(model)}Resource extends BaseResources {
   }
 
   //remove item
-  deleteItem = (id: string, options?: Options) => {
+  deleteItem = (id: string, options?:  ${model}Options) => {
     return new Promise<${model}Model>(async (resolve, reject) => {
       try {
         const route = this.route;
@@ -95,7 +72,7 @@ class ${pluralize(model)}Resource extends BaseResources {
   }
 
   //remove items
-  deleteMany = (id: string[], options?: Options) => {
+  deleteMany = (id: string[], options?:  ${model}Options) => {
     return new Promise<${model}Model[]>(async (resolve, reject) => {
       try {
         const route = this.route;
@@ -107,71 +84,68 @@ class ${pluralize(model)}Resource extends BaseResources {
     })
   }
   
+  //update single item
   updateItem = async (
     id: string,
     data:  ${model}UpdateInput,
-    options?: Options
+    options?:  ${model}Options
   ) => {
     const result = await this.patch(this.route, id, data, options);
     return result as  ${model}Model;
   };
 
-  /**
-  * @param data required from update new data
-  * @param options optional params for include details
-*/
+  //update batch items
   updateMany = async (
     data: ${model}UpdateInput[],
-    options?: Options
+    options?: ${model}Options
   ) => {
     const result = await this.patchBatch(this.route, data, options);
     return result as  ${model}Model[];
   };
 
-  /**
-   * @param options (optional) parameter for include more details 
-   * @returns result of { data: object[], limit: number, page: number, pages: number, length: number}
- */
-  list = async ({ limit = 50, page = 1, options = {} }: ListParams = DefaultParams) => {
+//get data as list
+  list = async ({ limit = 50, page = 1, options = {} }: ListParams<${model}Args> = DefaultParams) => {
     const route = this.route + '/list?limit=' + limit + '&page=' + page;
     const result = await this.get(route, options);
     return result as ResultInfo<${model}Model>;
   } 
 
-  /**
-   * @param options (optional) parameter for include more details
-   * @returns object[]
-   */
-  getAll = async (options?: Options) => {
+  //get all items
+  getAll = async (options?: ${model}Args) => {
     const result = await this.get(this.route, options);
-    return result as ${model}[];
+    return result as ${model}Model[];
   }
 
-  /**
-   * @param id (string) required for get specific item
-   * @param options (optional) parameter for include more details
-   * @returns Null or Object
-   */
 
-  getItem = async (id: string, options?: Options) => {
+  //get single item
+  getItem = async (id: string, options?: ${model}Options) => {
     const path = mergeRoute(this.route, id);
     const result = await this.get(path, options);
     return result as ${model}Model;
   }
 
-  //item count
-  count = async (options?: CountOptions) => {
-    const result = await this.get(this.route + "/count", options);
-    return result;
+  //items count
+  count = <CountResult = any>(options?: ${model}CountOptions) => {
+    return new Promise<CountResult>(async (resolve, reject) => {
+      try {
+        const result = await this.get(this.route + "/count", options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
   }
 
-  /**
-   * @param options required for grouping data
-   * @returns object[];
-   */
-  groupBy = async (options: GroupByOptions) => {
-    const result = await this.get(this.route + '/group', options);
-    return result;
+
+  groupBy = <GroupResult = any>(options: ${model}GroupOptions) => {
+    return new Promise<GroupResult>(async (resolve, reject) => {
+      try {
+        const result = await this.get(this.route + '/group', options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
   }
 }
 
@@ -180,39 +154,23 @@ export default ${pluralize(model)}Resource;`);
     }
     else {
         createFile(`${currentDir}\\${name}.ts`, `import BaseResources from "./base-resources";
-import { ${model}, Prisma } from "../../prisma";
 import { mergeRoute } from "../method";
+import {
+  ErrorInfo,
+  ListParams,
+  ResultInfo,
+  ${model}Args,
+  ${model}Model,
+  ${model}Options,
+  ${model}CountOptions, 
+  ${model}GroupOptions, 
+} from "../models";
 
 const DefaultParams = {
   page: 1,
   limit: 50,
   options: {}
 };
-
-interface ResultInfo<ItemT = any> {
-  page: number;
-  count: number;
-  limit: number;
-  pages: number;
-  length: number;
-  data: ItemT[]
-}
-
-
-export type ${model}Model = ${model};
-export type Options = Prisma.${model}FindManyArgs;
-export type CountOptions = Prisma.${model}CountArgs;
-export type Options = Prisma.${model}DefaultArgs;
-export type GroupByOptions = Prisma.${model}GroupByArgs;
-export type ${model}Input = Prisma.${model}UncheckedCreateInput;
-export type ${model}UpdateInput = Prisma.${model}UncheckedUpdateInput;
-
-interface ListParams {
-  page: number;
-  limit: number;
-  options?: Options;
-}
-
 
 
 class ${pluralize(model)}Resource extends BaseResources {
@@ -222,7 +180,7 @@ class ${pluralize(model)}Resource extends BaseResources {
    * @param options (optional) parameter for include more details 
    * @returns result of { data: object[], limit: number, page: number, pages: number, length: number}
  */
-  list = async ({ limit = 50, page = 1, options = {} }: ListParams = DefaultParams) => {
+  list = async ({ limit = 50, page = 1, options = {} }: ListParams<${model}Args> = DefaultParams) => {
     const route = this.route + '/list?limit=' + limit + '&page=' + page;
     const result = await this.get(route, options);
     return result as ResultInfo<${model}Model>;
@@ -232,9 +190,9 @@ class ${pluralize(model)}Resource extends BaseResources {
    * @param options (optional) parameter for include more details
    * @returns object[]
    */
-  getAll = async (options?: Options) => {
+  getAll = async (options?: ${model}Args) => {
     const result = await this.get(this.route, options);
-    return result as ${model}[];
+    return result as ${model}Model[];
   }
 
   /**
@@ -243,25 +201,34 @@ class ${pluralize(model)}Resource extends BaseResources {
    * @returns Null or Object
    */
 
-  getItem = async (id: string, options?: Options) => {
+  getItem = async (id: string, options?: ${model}Options) => {
     const path = mergeRoute(this.route, id);
     const result = await this.get(path, options);
     return result as ${model}Model;
   }
 
-  //item count
-  count = async (options?: CountOptions) => {
-    const result = await this.get(this.route + "/count", options);
-    return result;
+  //items count
+  count = <CountResult = any>(options?: ${model}CountOptions) => {
+    return new Promise<CountResult>(async (resolve, reject) => {
+      try {
+        const result = await this.get(this.route + "/count", options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
   }
 
-  /**
-   * @param options required for grouping data
-   * @returns object[];
-   */
-  groupBy = async (options: GroupByOptions) => {
-    const result = await this.get(this.route + '/group', options);
-    return result;
+
+  groupBy = <GroupResult = any>(options: ${model}GroupOptions) => {
+    return new Promise<GroupResult>(async (resolve, reject) => {
+      try {
+        const result = await this.get(this.route + '/group', options);
+        return resolve(result);
+      } catch (error) {
+        return reject(error as ErrorInfo);
+      }
+    })
   }
 }
 
